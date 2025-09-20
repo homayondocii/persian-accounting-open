@@ -33,9 +33,12 @@ import {
   Assessment,
   ExitToApp,
   Person,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
 import { RootState } from '@/store/store';
 import { logout } from '@/store/slices/authSlice';
+import { useTheme as useCustomTheme } from '@/contexts/ThemeContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -67,6 +70,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { darkMode, toggleDarkMode } = useCustomTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Adjust drawer width for mobile
@@ -170,6 +174,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {user?.company?.name || 'شرکت'}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton onClick={toggleDarkMode} color="inherit" sx={{ mr: 1 }}>
+              {darkMode ? <LightMode /> : <DarkMode />}
+            </IconButton>
             <IconButton onClick={handleMenuClick} color="inherit">
               <Avatar sx={{ width: 32, height: 32 }}>
                 {user?.name?.charAt(0) || 'U'}

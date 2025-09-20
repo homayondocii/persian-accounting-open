@@ -33,3 +33,11 @@ export const Products: React.FC = () => (
 export const Reports: React.FC = () => (
   <Box><Typography variant="h4">گزارشات</Typography></Box>
 );
+
+export const Accounts: React.FC = () => (
+  <Box><Typography variant="h4">مدیریت حساب‌ها</Typography></Box>
+);
+
+export const Transactions: React.FC = () => (
+  <Box><Typography variant="h4">مدیریت تراکنش‌ها</Typography></Box>
+);

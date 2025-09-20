@@ -2,7 +2,7 @@
 export interface ApiResponse<T = any> {
   success: boolean;
   message?: string;
-  data?: T;
+  data: T;
   error?: string;
 }
 
@@ -217,6 +217,11 @@ export interface PaginatedResponse<T> {
 export interface LoginForm {
   email: string;
   password: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
 }
 
 export interface RegisterForm {
