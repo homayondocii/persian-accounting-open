@@ -1,0 +1,325 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String @default("USER")  // UserRole enum as string
+  isActive  Boolean  @default(true)
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model Company {
+  id          String  @id @default(cuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  taxId       String? @unique
+  website     String?
+  logo        String?
+  settings    String?  // JSON stored as text in SQLite
+  
+  users       User[]
+  employees   Employee[]
+  customers   Customer[]
+  suppliers   Supplier[]
+  accounts    Account[]
+  products    Product[]
+  services    Service[]
+  categories  Category[]
+  checks      Check[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("companies")
+}
+
+model Account {
+  id          String      @id @default(cuid())
+  name        String
+  type        String  // AccountType enum as string
+  balance     Decimal     @default(0)
+  currency    String      @default("IRR")
+  isActive    Boolean     @default(true)
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id])
+  
+  transactions Transaction[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  accountId   String
+  account     Account           @relation(fields: [accountId], references: [id])
+  categoryId  String?
+  category    Category?         @relation(fields: [categoryId], references: [id])
+  amount      Decimal
+  type        String  // TransactionType enum as string
+  description String?
+  reference   String?
+  date        DateTime
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("transactions")
+}
+
+model Category {
+  id          String        @id @default(cuid())
+  name        String
+  type        String  // CategoryType enum as string
+  parentId    String?
+  parent      Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]    @relation("CategoryHierarchy")
+  companyId   String
+  company     Company       @relation(fields: [companyId], references: [id])
+  
+  transactions Transaction[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("categories")
+}
+
+model Check {
+  id          String      @id @default(cuid())
+  type        String  // CheckType enum as string
+  amount      Decimal
+  checkNumber String?
+  bankName    String?
+  accountNumber String?
+  issueDate   DateTime
+  dueDate     DateTime
+  status      String @default("PENDING")  // CheckStatus enum as string
+  description String?
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id])
+  
+  reminders   CheckReminder[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("checks")
+}
+
+model CheckReminder {
+  id        String   @id @default(cuid())
+  checkId   String
+  check     Check    @relation(fields: [checkId], references: [id])
+  reminderDate DateTime
+  sent      Boolean  @default(false)
+  type      String  // ReminderType enum as string
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("check_reminders")
+}
+
+model Employee {
+  id          String   @id @default(cuid())
+  employeeCode String
+  name        String
+  email       String?
+  phone       String?
+  position    String
+  department  String?
+  hireDate    DateTime
+  salary      Decimal
+  isActive    Boolean  @default(true)
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  payrollRecords PayrollRecord[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([companyId, employeeCode])
+  @@map("employees")
+}
+
+model PayrollRecord {
+  id          String  @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  period      String
+  grossPay    Decimal
+  deductions  Decimal @default(0)
+  netPay      Decimal
+  status      String @default("DRAFT")  // PayrollStatus enum as string
+  
+  items       PayrollItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("payroll_records")
+}
+
+model PayrollItem {
+  id            String        @id @default(cuid())
+  payrollId     String
+  payroll       PayrollRecord @relation(fields: [payrollId], references: [id])
+  type          String  // PayrollItemType enum as string
+  description   String
+  amount        Decimal
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("payroll_items")
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  taxId       String?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  invoices    Invoice[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("customers")
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  taxId       String?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("suppliers")
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  sku             String?
+  price           Decimal
+  cost            Decimal?
+  stockQuantity   Int      @default(0)
+  lowStockThreshold Int    @default(0)
+  isActive        Boolean  @default(true)
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id])
+  
+  invoiceItems    InvoiceItem[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  @@unique([companyId, sku])
+  @@map("products")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal
+  isActive    Boolean  @default(true)
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  
+  invoiceItems InvoiceItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("services")
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  invoiceNumber String
+  customerId  String
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  date        DateTime      @default(now())
+  dueDate     DateTime?
+  subtotal    Decimal
+  tax         Decimal @default(0)
+  total       Decimal
+  status      String @default("DRAFT")  // InvoiceStatus enum as string
+  notes       String?
+  
+  items       InvoiceItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  serviceId   String?
+  service     Service? @relation(fields: [serviceId], references: [id])
+  description String
+  quantity    Int
+  price       Decimal
+  total       Decimal
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("invoice_items")
+}
+
+// Enums replaced with String types for SQLite compatibility
+// Valid values are maintained in application logic

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم حسابداری جامع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Vazir', Arial, sans-serif; direction: rtl; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
+        .container { background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; max-width: 600px; width: 90%; }
+        h1 { color: #333; margin-bottom: 1rem; font-size: 2.5rem; }
+        .subtitle { color: #666; margin-bottom: 2rem; font-size: 1.2rem; }
+        .status { background: #e3f2fd; padding: 1rem; border-radius: 10px; margin: 2rem 0; border: 1px solid #2196f3; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn { background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Vazir', Arial, sans-serif; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 سیستم حسابداری جامع</h1>
+        <p class="subtitle">سیستم مدیریت مالی کسب و کارهای کوچک</p>
+        <div class="status">
+            <h3><span class="loading"></span>در حال راه‌اندازی سیستم...</h3>
+            <p>سیستم در حال آماده‌سازی است. مشکلات کامپایل در حال رفع است.</p>
+        </div>
+        <button class="btn" onclick="window.location.reload()">🔄 تازه‌سازی</button>
+        <div style="margin-top: 2rem; color: #999; font-size: 0.9rem;">
+            <p>✅ پایگاه داده: PostgreSQL آماده</p>
+            <p>✅ حافظه نهان: Redis آماده</p>
+            <p>⚙️ سرور برنامه: در حال تنظیم TypeScript...</p>
+        </div>
+    </div>
+</body>
+</html>

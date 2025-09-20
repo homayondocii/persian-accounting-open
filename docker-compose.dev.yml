@@ -1,0 +1,52 @@
+# Development Override Configuration
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: accounting_db_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+
+  redis:
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    # Remove password for development
+
+  backend:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://dev_user:dev_password@postgres:5432/accounting_db_dev
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-key
+      LOG_LEVEL: debug
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+    command: npm run dev
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Debug port
+
+  frontend:
+    build:
+      target: development
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+      VITE_APP_NAME: "سیستم حسابداری - توسعه"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/package.json:/app/package.json
+    command: npm run dev
+    ports:
+      - "5173:5173"
+
+  # Remove backup service in development
+  backup:
+    profiles:
+      - disabled
